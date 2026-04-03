@@ -1,0 +1,971 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>黑森信息科技 | HEISEN TECH</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400;600;700&family=Noto+Sans+SC:wght@300;400;500&family=Barlow+Condensed:wght@300;400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --black: #080808;
+  --white: #f2f1ed;
+  --green: #0c7538;
+  --green-light: #12a050;
+  --accent: #c6ff00;
+  --gray: #161616;
+  --gray2: #202020;
+  --muted: rgba(242,241,237,0.46);
+  --border: rgba(255,255,255,0.07);
+}
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--black);
+  color: var(--white);
+  font-family: 'Noto Sans SC', 'DM Sans', sans-serif;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── TYPE: Serif for CN headings, Barlow for EN/numbers ── */
+h1, h2, h3 {
+  font-family: 'Noto Serif SC', serif;
+  font-weight: 600;
+  line-height: 1.15;
+  letter-spacing: 0.01em;
+}
+h4 {
+  font-family: 'Noto Sans SC', sans-serif;
+  font-weight: 500;
+}
+
+/* ── LABEL ── */
+.t-label {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 11px; font-weight: 400;
+  letter-spacing: 0.32em; text-transform: uppercase;
+  color: var(--green-light);
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+}
+.t-label::before, .t-label::after {
+  content: ''; width: 18px; height: 1px; background: var(--green-light);
+  transition: width 0.6s ease;
+}
+.t-label.visible::before, .t-label.visible::after { width: 36px; }
+
+/* ── NAV ── */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 15px 40px;
+  background: rgba(8,8,8,0); backdrop-filter: blur(0px);
+  border-bottom: 1px solid transparent;
+  transition: background 0.5s ease, backdrop-filter 0.5s ease, border-color 0.5s ease;
+}
+nav.scrolled {
+  background: rgba(8,8,8,0.93);
+  backdrop-filter: blur(16px);
+  border-color: var(--border);
+}
+.nav-logo {
+  display: flex; align-items: center; gap: 10px;
+  text-decoration: none; color: var(--white);
+}
+.nav-logo-img {
+  width: 32px; height: 32px; border-radius: 6px;
+  object-fit: contain; background: var(--green); padding: 2px;
+}
+.nav-logo-fallback {
+  width: 32px; height: 32px; background: var(--green); border-radius: 6px;
+  display: none; align-items: center; justify-content: center;
+  font-family: 'Noto Sans SC', sans-serif; font-weight: 700; font-size: 15px;
+}
+.nav-logo-name {
+  font-family: 'Noto Serif SC', serif;
+  font-weight: 600; font-size: 15px; letter-spacing: 0.04em;
+}
+.nav-right { display: flex; align-items: center; gap: 26px; }
+.nav-links { display: flex; gap: 22px; list-style: none; }
+.nav-links a {
+  font-size: 13px; color: var(--muted); text-decoration: none;
+  transition: color 0.25s; position: relative;
+}
+.nav-links a::after {
+  content: ''; position: absolute; bottom: -3px; left: 0;
+  width: 0; height: 1px; background: var(--green-light);
+  transition: width 0.3s ease;
+}
+.nav-links a:hover { color: var(--white); }
+.nav-links a:hover::after { width: 100%; }
+.nav-btn {
+  padding: 9px 20px; background: transparent;
+  border: 1px solid rgba(255,255,255,0.22); border-radius: 3px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px; font-weight: 400; letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--white); text-decoration: none;
+  transition: background 0.25s, border-color 0.25s, color 0.25s;
+}
+.nav-btn:hover { background: var(--green); border-color: var(--green); }
+.hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; padding: 4px; }
+.hamburger span { display: block; width: 22px; height: 1.5px; background: var(--white); border-radius: 2px; transition: all 0.3s; }
+
+/* ── MOBILE MENU ── */
+.mmenu {
+  display: none; position: fixed; inset: 0; z-index: 199;
+  background: rgba(8,8,8,0.97);
+  flex-direction: column; align-items: center; justify-content: center; gap: 30px;
+  opacity: 0; transition: opacity 0.3s ease;
+}
+.mmenu.open { display: flex; opacity: 1; }
+.mmenu a {
+  font-family: 'Noto Serif SC', serif; font-size: 28px; font-weight: 600;
+  color: var(--white); text-decoration: none; transition: color 0.2s;
+  opacity: 0; transform: translateY(12px); transition: opacity 0.3s, transform 0.3s, color 0.2s;
+}
+.mmenu.open a { opacity: 1; transform: translateY(0); }
+.mmenu.open a:nth-child(2){transition-delay:0.05s}
+.mmenu.open a:nth-child(3){transition-delay:0.10s}
+.mmenu.open a:nth-child(4){transition-delay:0.15s}
+.mmenu.open a:nth-child(5){transition-delay:0.20s}
+.mmenu.open a:nth-child(6){transition-delay:0.25s}
+.mmenu a:hover { color: var(--green-light); }
+.mmenu-close { position: absolute; top: 18px; right: 22px; font-size: 22px; cursor: pointer; color: var(--muted); }
+
+/* ── HERO ── */
+.hero {
+  min-height: 100svh;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  text-align: center; padding: 120px 24px 80px;
+  position: relative; overflow: hidden;
+}
+.hero-bg {
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(ellipse 80% 50% at 50% 40%, rgba(12,117,56,0.11) 0%, transparent 70%),
+    radial-gradient(ellipse 40% 40% at 80% 80%, rgba(198,255,0,0.04) 0%, transparent 60%);
+  pointer-events: none;
+}
+.hero-grid {
+  position: absolute; inset: 0;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.018) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.018) 1px, transparent 1px);
+  background-size: 60px 60px;
+  mask-image: radial-gradient(ellipse 80% 80% at center, black, transparent);
+  pointer-events: none;
+  animation: gridDrift 20s linear infinite;
+}
+@keyframes gridDrift {
+  from { background-position: 0 0; }
+  to   { background-position: 60px 60px; }
+}
+
+/* Hero line sweep — thin light line scanning across on load */
+.hero::after {
+  content: '';
+  position: absolute;
+  top: 0; left: -100%; width: 50%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.015), transparent);
+  animation: scanLine 3s 0.8s ease-out forwards;
+  pointer-events: none;
+}
+@keyframes scanLine {
+  from { left: -60%; }
+  to   { left: 140%; }
+}
+
+.hero-eyebrow {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 11px; letter-spacing: 0.34em; text-transform: uppercase;
+  color: var(--green-light); margin-bottom: 32px;
+  opacity: 0; animation: fadeUp 0.8s 0.2s cubic-bezier(0.22,1,0.36,1) forwards;
+}
+.hero-title {
+  font-family: 'Noto Serif SC', serif; font-weight: 600;
+  font-size: clamp(48px, 11vw, 104px);
+  line-height: 1.12; letter-spacing: 0.01em; margin-bottom: 6px;
+  opacity: 0; animation: fadeUp 0.9s 0.35s cubic-bezier(0.22,1,0.36,1) forwards;
+}
+.hero-title .hl { color: var(--green-light); }
+.hero-en {
+  font-family: 'Barlow Condensed', sans-serif; font-weight: 300;
+  font-size: clamp(18px, 4vw, 38px); letter-spacing: 0.28em; text-transform: uppercase;
+  color: rgba(242,241,237,0.15); display: block; margin-top: 12px;
+}
+.hero-desc {
+  max-width: 480px; margin: 30px auto 40px;
+  font-size: 15px; font-weight: 300; line-height: 2.0; color: var(--muted);
+  opacity: 0; animation: fadeUp 0.9s 0.5s cubic-bezier(0.22,1,0.36,1) forwards;
+}
+.hero-ctas {
+  display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;
+  opacity: 0; animation: fadeUp 0.9s 0.65s cubic-bezier(0.22,1,0.36,1) forwards;
+}
+.btn-primary {
+  padding: 14px 34px; background: var(--green); border-radius: 3px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px; font-weight: 400; letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--white); text-decoration: none;
+  transition: background 0.25s, transform 0.25s;
+  position: relative; overflow: hidden;
+}
+.btn-primary::after {
+  content: ''; position: absolute; inset: 0;
+  background: rgba(255,255,255,0); transition: background 0.25s;
+}
+.btn-primary:hover { background: var(--green-light); transform: translateY(-2px); }
+.btn-outline {
+  padding: 14px 34px; border: 1px solid rgba(255,255,255,0.18); border-radius: 3px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px; font-weight: 400; letter-spacing: 0.1em; text-transform: uppercase;
+  color: rgba(242,241,237,0.65); text-decoration: none;
+  transition: border-color 0.25s, color 0.25s, transform 0.25s;
+}
+.btn-outline:hover { border-color: var(--accent); color: var(--accent); transform: translateY(-2px); }
+
+/* ── HERO STATS ── */
+.hero-stats {
+  display: flex; justify-content: center; margin-top: 64px;
+  border: 1px solid var(--border); border-radius: 8px; overflow: hidden;
+  width: 100%; max-width: 400px;
+  opacity: 0; animation: fadeUp 0.9s 0.8s cubic-bezier(0.22,1,0.36,1) forwards;
+}
+.hero-stat { flex: 1; padding: 22px 10px; text-align: center; border-right: 1px solid var(--border); }
+.hero-stat:last-child { border-right: none; }
+.hero-stat-num {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 700; font-size: 44px; line-height: 1; letter-spacing: 0.02em;
+}
+.hero-stat-num sup { font-size: 20px; color: var(--green-light); font-weight: 500; }
+.hero-stat-label { font-size: 10px; color: var(--muted); letter-spacing: 0.14em; text-transform: uppercase; margin-top: 7px; }
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── SECTIONS ── */
+.sec { padding: 100px 24px; text-align: center; }
+.sec-inner { max-width: 1080px; margin: 0 auto; }
+.sec-hd { margin-bottom: 56px; }
+.sec-hd .t-label { margin-bottom: 20px; }
+.sec-hd h2 { font-size: clamp(30px, 5.5vw, 56px); margin-bottom: 16px; }
+.sec-hd p { font-size: 15px; font-weight: 300; line-height: 1.95; color: var(--muted); max-width: 480px; margin: 0 auto; }
+
+/* ── REVEAL on scroll ── */
+.reveal {
+  opacity: 0; transform: translateY(28px);
+  transition: opacity 0.8s cubic-bezier(0.22,1,0.36,1), transform 0.8s cubic-bezier(0.22,1,0.36,1);
+}
+.reveal.visible { opacity: 1; transform: none; }
+.reveal-delay-1 { transition-delay: 0.1s; }
+.reveal-delay-2 { transition-delay: 0.2s; }
+
+/* ── ABOUT ── */
+.about-sec { background: var(--gray); }
+.about-cards { display: grid; grid-template-columns: repeat(3,1fr); gap: 1px; }
+.about-card {
+  background: var(--gray2); padding: 48px 28px; text-align: center;
+  transition: background 0.35s ease, transform 0.35s ease;
+  cursor: default;
+}
+.about-card:hover { background: #282828; transform: translateY(-3px); }
+.ac-icon { width: 52px; height: 52px; border-radius: 12px; margin: 0 auto 20px; display: flex; align-items: center; justify-content: center; font-size: 22px; }
+.about-card h3 {
+  font-family: 'Noto Serif SC', serif; font-size: 17px; font-weight: 600;
+  margin-bottom: 10px; letter-spacing: 0.02em;
+}
+.about-card p { font-size: 13px; font-weight: 300; color: var(--muted); line-height: 1.8; }
+
+/* ── BRANDS ── */
+.brands-sec { background: var(--black); }
+.brands-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.brand-card {
+  border-radius: 10px; padding: 48px 36px; text-align: center;
+  position: relative; overflow: hidden;
+  transition: transform 0.4s cubic-bezier(0.22,1,0.36,1);
+}
+/* Subtle inner glow on hover */
+.brand-card::before {
+  content: ''; position: absolute; inset: 0; border-radius: inherit;
+  opacity: 0; transition: opacity 0.4s ease;
+  background: radial-gradient(ellipse 60% 50% at 50% 0%, rgba(255,255,255,0.07), transparent);
+  pointer-events: none;
+}
+.brand-card:hover { transform: translateY(-5px); }
+.brand-card:hover::before { opacity: 1; }
+.brand-card.xiaomu { background: var(--green); }
+.brand-card.himi { background: var(--gray2); border: 1px solid rgba(255,255,255,0.06); }
+/* Brand cover images — uncomment after adding files to assets/images/brands/ */
+/* .brand-card.xiaomu { background-image: url('assets/images/brands/xiaomu-cover.jpg'); background-size: cover; background-position: center; } */
+/* .brand-card.himi { background-image: url('assets/images/brands/himi-cover.jpg'); background-size: cover; background-position: center; } */
+.bc-tag {
+  display: inline-block; font-family: 'DM Sans', sans-serif;
+  font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase;
+  padding: 5px 14px; border: 1px solid rgba(255,255,255,0.22); border-radius: 20px;
+  margin-bottom: 24px; color: rgba(255,255,255,0.5);
+}
+.bc-en {
+  font-family: 'Barlow Condensed', sans-serif; font-weight: 700;
+  font-size: clamp(40px, 5.5vw, 68px); line-height: 1; letter-spacing: 0.05em;
+  text-transform: uppercase; margin-bottom: 6px;
+}
+.bc-cn {
+  font-family: 'Noto Serif SC', serif; font-weight: 400;
+  font-size: 16px; letter-spacing: 0.12em; opacity: 0.65; margin-bottom: 20px;
+}
+.bc-desc { font-size: 14px; font-weight: 300; line-height: 1.9; color: rgba(255,255,255,0.65); margin: 0 auto 24px; max-width: 340px; }
+.bc-tags { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-bottom: 32px; }
+.bc-tags span { font-size: 11px; padding: 5px 13px; background: rgba(255,255,255,0.1); border-radius: 2px; letter-spacing: 0.03em; }
+.bc-link {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px; letter-spacing: 0.16em; text-transform: uppercase;
+  color: rgba(255,255,255,0.44); display: inline-flex; align-items: center; gap: 10px;
+  text-decoration: none; transition: gap 0.3s ease, color 0.3s ease;
+}
+.brand-card:hover .bc-link { color: var(--white); gap: 20px; }
+.bc-badge {
+  position: absolute; top: 26px; right: 26px;
+  width: 48px; height: 48px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 9px; font-weight: 500; letter-spacing: 0.05em;
+  text-align: center; line-height: 1.4; text-transform: uppercase;
+}
+.bc-badge.new { background: var(--accent); color: var(--black); }
+.bc-badge.est { border: 1px solid rgba(255,255,255,0.16); color: rgba(255,255,255,0.28); }
+
+/* ── AI SECTION ── */
+.ai-sec { background: linear-gradient(160deg, #060606 0%, #070e09 100%); position: relative; overflow: hidden; }
+.ai-sec::before {
+  content: ''; position: absolute; top: -100px; right: -100px;
+  width: 400px; height: 400px;
+  background: radial-gradient(circle, rgba(12,117,56,0.13) 0%, transparent 70%);
+  pointer-events: none; animation: slowPulse 6s ease-in-out infinite;
+}
+@keyframes slowPulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50%       { transform: scale(1.15); opacity: 0.7; }
+}
+.ai-flow { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center; max-width: 960px; margin: 0 auto; }
+.ai-steps { display: flex; flex-direction: column; text-align: left; }
+.ai-step {
+  display: flex; gap: 22px; padding: 24px 0;
+  border-bottom: 1px solid var(--border);
+  transition: padding-left 0.3s ease;
+}
+.ai-step:last-child { border-bottom: none; }
+.ai-step:hover { padding-left: 6px; }
+.ai-snum {
+  font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 38px;
+  color: var(--green); opacity: 0.28; line-height: 1; min-width: 44px;
+  transition: opacity 0.3s ease;
+}
+.ai-step:hover .ai-snum { opacity: 1; }
+.ai-step h4 {
+  font-family: 'Noto Serif SC', serif; font-weight: 600;
+  font-size: 15px; margin-bottom: 6px; letter-spacing: 0.02em;
+}
+.ai-step p { font-size: 13px; font-weight: 300; color: var(--muted); line-height: 1.75; }
+.ai-mock {
+  background: var(--gray2); border-radius: 10px; border: 1px solid rgba(255,255,255,0.06);
+  overflow: hidden;
+  /* Subtle tilt on hover */
+  transition: transform 0.4s cubic-bezier(0.22,1,0.36,1);
+}
+.ai-mock:hover { transform: perspective(800px) rotateY(-2deg) translateY(-4px); }
+.ai-mock-bar { display: flex; align-items: center; gap: 6px; padding: 12px 16px; background: rgba(0,0,0,0.22); border-bottom: 1px solid var(--border); }
+.ad { width: 10px; height: 10px; border-radius: 50%; }
+.ad:nth-child(1){background:#ff5f57}.ad:nth-child(2){background:#febc2e}.ad:nth-child(3){background:#28c840}
+.ai-mock-title { font-family: 'DM Sans', sans-serif; font-size: 11px; color: var(--muted); letter-spacing: 0.1em; margin-left: 6px; }
+.ai-mock-body { padding: 18px; }
+.ai-prompt { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.06); border-radius: 6px; padding: 14px; font-size: 13px; color: var(--muted); margin-bottom: 12px; line-height: 1.65; }
+.ai-gen-btn {
+  width: 100%; padding: 12px; background: var(--green); border: none; border-radius: 5px;
+  color: #fff; font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 400;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  cursor: pointer; margin-bottom: 14px;
+  position: relative; overflow: hidden; transition: background 0.25s;
+}
+.ai-gen-btn:hover { background: var(--green-light); }
+.ai-gen-btn::after {
+  content: ''; position: absolute; top: 0; left: -100%; width: 60%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent);
+  animation: shimmer 3s infinite;
+}
+@keyframes shimmer { to { left: 200%; } }
+.ai-out { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.ai-out-item { border-radius: 5px; display: flex; align-items: center; justify-content: center; font-size: 28px; position: relative; overflow: hidden; }
+.ai-out-item.tall { grid-row: span 2; }
+.ai-out-lbl { position: absolute; bottom: 6px; left: 6px; font-family: 'DM Sans', sans-serif; font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255,255,255,0.34); background: rgba(0,0,0,0.5); padding: 2px 7px; border-radius: 2px; }
+
+/* ── WORKS ── */
+.works-sec { background: #0a0a0a; }
+.works-filter { display: flex; justify-content: center; flex-wrap: wrap; gap: 6px; margin-bottom: 36px; }
+.fbtn {
+  padding: 8px 18px; background: none; border: 1px solid var(--border); border-radius: 20px;
+  font-family: 'DM Sans', sans-serif; font-size: 12px; letter-spacing: 0.06em;
+  color: var(--muted); cursor: pointer; transition: all 0.25s; position: relative; overflow: hidden;
+}
+.fbtn::before {
+  content: ''; position: absolute; inset: 0; background: var(--green);
+  transform: scaleX(0); transform-origin: left; transition: transform 0.25s ease; border-radius: inherit;
+}
+.fbtn span { position: relative; }
+.fbtn:hover { border-color: rgba(255,255,255,0.2); color: var(--white); }
+.fbtn.active { border-color: var(--green); color: var(--white); }
+.fbtn.active::before { transform: scaleX(1); }
+.works-grid { columns: 3; gap: 12px; }
+.wi {
+  break-inside: avoid; margin-bottom: 12px; border-radius: 7px; overflow: hidden;
+  position: relative; cursor: pointer; background: var(--gray);
+}
+.wi-img { width: 100%; display: block; transition: transform 0.6s cubic-bezier(0.22,1,0.36,1); }
+.wi:hover .wi-img { transform: scale(1.05); }
+.wi-overlay {
+  position: absolute; inset: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.2) 50%, transparent 100%);
+  opacity: 0; transition: opacity 0.35s ease;
+  display: flex; flex-direction: column; justify-content: flex-end; padding: 18px;
+}
+.wi:hover .wi-overlay { opacity: 1; }
+.wi-title { font-family: 'Noto Serif SC', serif; font-size: 13px; font-weight: 600; margin-bottom: 4px; }
+.wi-cat { font-family: 'DM Sans', sans-serif; font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--accent); }
+.wi-vbadge { position: absolute; top: 10px; left: 10px; background: rgba(0,0,0,0.55); border: 1px solid rgba(255,255,255,0.15); border-radius: 3px; font-family: 'DM Sans', sans-serif; font-size: 9px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--white); padding: 2px 7px; }
+.wi-play {
+  position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%) scale(0.8);
+  width: 46px; height: 46px; border: 1.5px solid rgba(255,255,255,0.35); border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; padding-left: 3px; opacity: 0;
+  transition: opacity 0.3s ease, transform 0.3s ease, border-color 0.3s;
+}
+.wi:hover .wi-play { opacity: 1; transform: translate(-50%,-50%) scale(1); border-color: var(--accent); color: var(--accent); }
+
+/* ── CLIENTS ── */
+.clients-sec { background: var(--gray); padding: 56px 0; overflow: hidden; }
+.clients-lbl { text-align: center; font-family: 'DM Sans', sans-serif; font-size: 11px; letter-spacing: 0.3em; text-transform: uppercase; color: var(--muted); margin-bottom: 36px; }
+.clients-track { display: flex; gap: 0; width: max-content; animation: marquee 24s linear infinite; }
+.clients-track:hover { animation-play-state: paused; }
+@keyframes marquee { from{transform:translateX(0)} to{transform:translateX(-50%)} }
+.ci { padding: 0 36px; font-family: 'Noto Sans SC', sans-serif; font-size: 14px; font-weight: 400; color: rgba(242,241,237,0.18); border-left: 1px solid var(--border); white-space: nowrap; transition: color 0.3s; display: inline-flex; align-items: center; height: 48px; }
+.ci:hover { color: rgba(242,241,237,0.65); }
+.ci img { height: 30px; object-fit: contain; opacity: 0.28; transition: opacity 0.3s; filter: grayscale(1) brightness(2); }
+.ci:hover img { opacity: 0.75; }
+
+/* ── CONTACT ── */
+.contact-sec { background: var(--black); }
+.contact-grid { display: grid; grid-template-columns: 1fr 1.2fr; gap: 60px; text-align: left; max-width: 920px; margin: 0 auto; }
+.contact-grid > div > h2 { font-size: clamp(26px, 4vw, 44px); margin-bottom: 16px; }
+.contact-grid > div > p { font-size: 14px; font-weight: 300; line-height: 1.95; color: var(--muted); margin-bottom: 36px; }
+.cmeta { display: flex; flex-direction: column; gap: 16px; }
+.cmi { display: flex; gap: 12px; align-items: flex-start; }
+.cmi-icon { width: 34px; height: 34px; border-radius: 6px; background: var(--gray2); display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0; }
+.cmi-lbl { font-family: 'DM Sans', sans-serif; font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); margin-bottom: 3px; }
+.cmi-val { font-size: 13px; }
+.form { display: flex; flex-direction: column; gap: 13px; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 13px; }
+.fg { display: flex; flex-direction: column; gap: 7px; }
+.fl { font-family: 'DM Sans', sans-serif; font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); }
+.fi, .fta {
+  background: var(--gray2); border: 1px solid var(--border); border-radius: 5px;
+  padding: 13px 14px; font-family: 'Noto Sans SC', sans-serif; font-size: 13px; color: var(--white);
+  outline: none; resize: none;
+  transition: border-color 0.3s ease, background 0.3s ease;
+}
+.fi:focus, .fta:focus { border-color: var(--green); background: rgba(12,117,56,0.04); }
+.fi::placeholder, .fta::placeholder { color: rgba(255,255,255,0.15); }
+.fta { min-height: 108px; }
+.fsub {
+  align-self: flex-start; padding: 13px 34px; background: var(--white);
+  border: none; border-radius: 3px;
+  font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 400;
+  letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--black); cursor: pointer;
+  transition: background 0.25s ease, color 0.25s ease, transform 0.25s ease;
+}
+.fsub:hover { background: var(--accent); transform: translateY(-2px); }
+
+/* ── FOOTER ── */
+footer { background: var(--gray); border-top: 1px solid var(--border); padding: 44px 40px; display: flex; align-items: center; justify-content: space-between; gap: 20px; flex-wrap: wrap; }
+.fbrand { font-family: 'Noto Serif SC', serif; font-weight: 600; font-size: 14px; letter-spacing: 0.04em; margin-bottom: 5px; }
+.fsub2 { font-family: 'DM Sans', sans-serif; font-size: 11px; color: var(--muted); letter-spacing: 0.04em; }
+.flinks { display: flex; gap: 22px; flex-wrap: wrap; justify-content: center; }
+.flinks a { font-family: 'DM Sans', sans-serif; font-size: 12px; color: var(--muted); text-decoration: none; letter-spacing: 0.06em; transition: color 0.2s; }
+.flinks a:hover { color: var(--white); }
+.fcopy { font-family: 'DM Sans', sans-serif; font-size: 11px; color: rgba(255,255,255,0.18); }
+
+/* ── MOBILE ── */
+@media (max-width: 768px) {
+  nav { padding: 13px 18px; }
+  .nav-links { display: none; }
+  .hamburger { display: flex; }
+  .hero { padding: 100px 20px 64px; }
+  .hero-title { font-size: clamp(42px, 13vw, 72px); }
+  .hero-stats { max-width: 100%; }
+  .hero-stat-num { font-size: 36px; }
+  .sec { padding: 72px 20px; }
+  .about-cards { grid-template-columns: 1fr; }
+  .brands-grid { grid-template-columns: 1fr; }
+  .brand-card { padding: 36px 24px; }
+  .ai-flow { grid-template-columns: 1fr; gap: 36px; }
+  .works-grid { columns: 2; }
+  .contact-grid { grid-template-columns: 1fr; gap: 40px; }
+  .form-row { grid-template-columns: 1fr; }
+  .fsub { width: 100%; text-align: center; align-self: stretch; }
+  footer { flex-direction: column; align-items: center; text-align: center; padding: 36px 20px; }
+}
+@media (max-width: 480px) {
+  .works-grid { columns: 1; }
+  .hero-ctas { flex-direction: column; align-items: stretch; }
+  .hero-ctas a { text-align: center; }
+}
+</style>
+</head>
+<body>
+
+<!-- MOBILE MENU -->
+<div class="mmenu" id="mmenu">
+  <span class="mmenu-close" onclick="toggleMenu()">&#10005;</span>
+  <a href="#about" onclick="toggleMenu()">关于我们</a>
+  <a href="#brands" onclick="toggleMenu()">服务品牌</a>
+  <a href="#himi" onclick="toggleMenu()">himi AI</a>
+  <a href="#works" onclick="toggleMenu()">作品案例</a>
+  <a href="#contact" onclick="toggleMenu()">联系我们</a>
+</div>
+
+<!-- NAV -->
+<nav id="mainNav">
+  <a href="#" class="nav-logo">
+    <!--
+      Logo 替换说明：
+      nav-logo-img 优先加载图片，失败时显示文字兜底。
+      推荐用：assets/icons/logo-heisen-filled.png（深色背景）
+    -->
+    <img class="nav-logo-img"
+         src="assets/icons/logo-heisen-filled.png"
+         alt="黑森科技"
+         onerror="this.style.display='none';document.getElementById('nlf').style.display='flex'">
+    <div class="nav-logo-fallback" id="nlf">黑</div>
+    <span class="nav-logo-name">黑森科技</span>
+  </a>
+  <div class="nav-right">
+    <ul class="nav-links">
+      <li><a href="#about">关于我们</a></li>
+      <li><a href="#brands">服务品牌</a></li>
+      <li><a href="#himi">himi AI</a></li>
+      <li><a href="#works">作品案例</a></li>
+      <li><a href="#contact">联系我们</a></li>
+    </ul>
+    <a href="#contact" class="nav-btn">开始合作</a>
+    <div class="hamburger" onclick="toggleMenu()">
+      <span></span><span></span><span></span>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="home">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+  <div class="hero-eyebrow">广州 · 创意科技公司 · EST. 2012</div>
+  <h1 class="hero-title">
+    重新定义<br><span class="hl">品牌增长</span>
+    <span class="hero-en">HEISEN TECH</span>
+  </h1>
+  <p class="hero-desc">
+    黑森（广州）信息科技有限公司，旗下拥有<strong>小木广告</strong>、 <strong>himi AI</strong> 、<strong>黑图</strong> 等多个服务品牌，以创意为核心、技术为驱动，服务电商、金融、快消、数字出版等多个头部客户。
+  </p>
+  <div class="hero-ctas">
+    <a href="#brands" class="btn-primary">探索服务品牌</a>
+    <a href="#works" class="btn-outline">查看作品案例</a>
+  </div>
+  <div class="hero-stats">
+    <div class="hero-stat">
+      <div class="hero-stat-num" data-target="200">0<sup>+</sup></div>
+      <div class="hero-stat-label">合作客户</div>
+    </div>
+    <div class="hero-stat">
+      <div class="hero-stat-num" data-target="15">0<sup>+</sup></div>
+      <div class="hero-stat-label">年行业经验</div>
+    </div>
+    <div class="hero-stat">
+      <div class="hero-stat-num" data-target="50">0<sup>+</sup></div>
+      <div class="hero-stat-label">创意团队</div>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section class="sec about-sec" id="about">
+  <div class="sec-inner">
+    <div class="sec-hd reveal">
+      <p class="t-label">关于黑森</p>
+      <h2>专注创意增长<br>的科技公司</h2>
+      <p>我们坚信优秀的品牌增长需要创意与技术的双轮驱动，从广州出发，持续帮助品牌突破增长边界。</p>
+    </div>
+    <div class="about-cards">
+      <div class="about-card reveal">
+        <!--
+          小木Logo：可替换为真实图片：
+          <img src="assets/icons/logo-xiaomu.png" alt="小木广告" style="width:36px;height:36px;object-fit:contain">
+        -->
+        <div class="ac-icon" style="background:var(--green)">
+          <img src="assets/icons/logo-xiaomu.png" alt="小木" style="width:28px;height:28px;object-fit:contain"
+               onerror="this.outerHTML='&#x1F333;'">
+        </div>
+        <h3>小木广告</h3>
+        <p>专注大客户全链路创意服务，覆盖品牌设计、新媒体、活动策划等核心场景</p>
+      </div>
+      <div class="about-card reveal reveal-delay-1">
+        <div class="ac-icon" style="background:rgba(198,255,0,0.12)">&#9889;</div>
+        <h3>himi AI</h3>
+        <p>新孵化的 AI 电商应用，一键生成详情页与视频，内容效率提升 10 倍</p>
+      </div>
+      <div class="about-card reveal reveal-delay-2">
+        <div class="ac-icon" style="background:rgba(255,255,255,0.06)">&#127961;</div>
+        <h3>黑图</h3>
+        <p>黑图是国内目前最大的产业应用图库，服务于装饰画、雕塑、手机壳、印花、动漫等8大行业</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- BRANDS -->
+<section class="sec brands-sec" id="brands">
+  <div class="sec-inner">
+    <div class="sec-hd reveal">
+      <p class="t-label">服务品牌</p>
+      <h2>两大品牌<br>覆盖全场景增长</h2>
+    </div>
+    <div class="brands-grid">
+      <!--
+        封面图替换：将 xiaomu-cover.jpg 放入 assets/images/brands/
+        然后在 class="brand-card xiaomu" 的 style 里加：
+        style="background-image:url('assets/images/brands/xiaomu-cover.jpg');background-size:cover;background-position:center"
+      -->
+      <div class="brand-card xiaomu reveal">
+        <span class="bc-tag">广告营销 · 创意服务</span>
+        <div class="bc-en">XIAOMU</div>
+        <div class="bc-cn">小木广告</div>
+        <p class="bc-desc">专注为大客户提供全链路营销创意服务，深度服务电商、金融、快消等行业头部品牌，从视觉到传播，一站搞定。</p>
+        <div class="bc-tags">
+          <span>品牌设计</span><span>新媒体运营</span><span>活动策划</span>
+          <span>KV 视觉</span><span>电商美工</span><span>社交内容</span>
+        </div>
+        <a href="#contact" class="bc-link">了解合作方式 &rarr;</a>
+        <div class="bc-badge est">HEAD<br>LINE</div>
+      </div>
+      <!--
+        himi 封面图：将 himi-cover.jpg 放入 assets/images/brands/ 后取消注释
+      -->
+      <div class="brand-card himi reveal reveal-delay-1">
+        <span class="bc-tag">AI 应用 · 电商内容</span>
+        <div class="bc-en">HIMI AI</div>
+        <div class="bc-cn">智能电商创作平台</div>
+        <p class="bc-desc">全新孵化的 AI 电商产品，输入商品信息即可一键生成专业详情页图文与带货短视频，极大提升内容生产效率。</p>
+        <div class="bc-tags">
+          <span>AI 详情页生成</span><span>AI 视频制作</span><span>智能文案</span>
+          <span>图片处理</span><span>一键发布</span>
+        </div>
+        <a href="#himi" class="bc-link">体验 himi AI &rarr;</a>
+        <div class="bc-badge new">NEW<br>2025</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HIMI AI FEATURE -->
+<section class="sec ai-sec" id="himi">
+  <div class="sec-hd reveal">
+    <p class="t-label">himi AI · 核心能力</p>
+    <h2>一键输入<br>AI 全自动出图</h2>
+  </div>
+  <div class="ai-flow">
+    <div class="ai-steps reveal">
+      <div class="ai-step">
+        <div class="ai-snum">01</div>
+        <div>
+          <h4>输入商品信息</h4>
+          <p>上传图片或填写商品名称、卖点、目标人群等基础信息，无需设计经验。</p>
+        </div>
+      </div>
+      <div class="ai-step">
+        <div class="ai-snum">02</div>
+        <div>
+          <h4>AI 智能理解与生成</h4>
+          <p>大模型自动分析商品特性，匹配最佳视觉风格，生成专业级详情页与视频脚本。</p>
+        </div>
+      </div>
+      <div class="ai-step">
+        <div class="ai-snum">03</div>
+        <div>
+          <h4>一键导出多平台发布</h4>
+          <p>支持天猫、京东、抖音等平台格式一键导出，全程仅需 3 分钟。</p>
+        </div>
+      </div>
+    </div>
+    <div class="ai-mock reveal reveal-delay-1">
+      <div class="ai-mock-bar">
+        <div class="ad"></div><div class="ad"></div><div class="ad"></div>
+        <span class="ai-mock-title">himi AI · 创作工作台</span>
+      </div>
+      <div class="ai-mock-body">
+        <div class="ai-prompt"> + <br>上传您的商品图 </div>
+        <button class="ai-gen-btn">&#10022; AI 一键生成详情页</button>
+        <div class="ai-out">
+          <!--
+            替换说明：将效果图放入 assets/images/ 后，把下面 div 改为 img 标签
+            例：<img src="assets/images/ai-preview-main.jpg" style="width:100%;border-radius:5px">
+          -->
+          <div class="ai-out-item tall" style="min-height:150px;background:linear-gradient(135deg,#1a2e1a,#0e1f12)">
+            &#129371;
+            <div class="ai-out-lbl">主图 · 竖版</div>
+          </div>
+          <div class="ai-out-item" style="min-height:71px;background:linear-gradient(135deg,#1e1e1e,#2a2a2a)">
+            &#128230;
+            <div class="ai-out-lbl">卖点图</div>
+          </div>
+          <div class="ai-out-item" style="min-height:71px;background:linear-gradient(135deg,#14200f,#1a2a10)">
+            &#127916;
+            <div class="ai-out-lbl">视频脚本</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- WORKS -->
+<section class="sec works-sec" id="works">
+  <div class="sec-inner">
+    <div class="sec-hd reveal">
+      <p class="t-label">作品案例</p>
+      <h2>我们的<br>创意成果</h2>
+    </div>
+    <div class="works-filter reveal">
+      <button class="fbtn active" onclick="fw(this,'all')"><span>全部</span></button>
+      <button class="fbtn" onclick="fw(this,'design')"><span>品牌设计</span></button>
+      <button class="fbtn" onclick="fw(this,'ecom')"><span>电商视觉</span></button>
+      <button class="fbtn" onclick="fw(this,'social')"><span>新媒体</span></button>
+      <button class="fbtn" onclick="fw(this,'video')"><span>视频</span></button>
+      <button class="fbtn" onclick="fw(this,'ai')"><span>AI 生成</span></button>
+    </div>
+    <!-- 作品瀑布流由 JS 渲染，见页面底部 script -->
+    <div class="works-grid reveal" id="wg"></div>
+  </div>
+</section>
+
+<!-- CLIENTS MARQUEE -->
+<div class="clients-sec">
+  <p class="clients-lbl">合作过的品牌 · Clients We Serve</p>
+  <div style="overflow:hidden">
+    <div class="clients-track">
+      <!--
+        客户Logo替换说明：
+        将Logo图片放入 assets/images/clients/，然后把文字替换为图片，例如：
+        <span class="ci"><img src="assets/images/clients/tianmao.png" alt="天猫"></span>
+      -->
+      <span class="ci">天猫</span>
+      <span class="ci">京东</span>
+      <span class="ci">完美日记</span>
+      <span class="ci">华为</span>
+      <span class="ci">招商银行</span>
+      <span class="ci">平安保险</span>
+      <span class="ci">元气森林</span>
+      <span class="ci">波司登</span>
+      <span class="ci">小米</span>
+      <span class="ci">伊利</span>
+      <span class="ci">天猫</span>
+      <span class="ci">京东</span>
+      <span class="ci">完美日记</span>
+      <span class="ci">华为</span>
+      <span class="ci">招商银行</span>
+      <span class="ci">平安保险</span>
+      <span class="ci">元气森林</span>
+      <span class="ci">波司登</span>
+      <span class="ci">小米</span>
+      <span class="ci">伊利</span>
+    </div>
+  </div>
+</div>
+
+<!-- CONTACT -->
+<section class="sec contact-sec" id="contact">
+  <div class="sec-hd reveal">
+    <p class="t-label">联系我们</p>
+    <h2>让我们<br>一起生长</h2>
+  </div>
+  <div class="contact-grid reveal">
+    <div>
+      <h2>期待与您<br>深度连接</h2>
+      <p>无论是品牌创意需求、himi AI 产品体验，还是商务合作，我们都期待与您探索增长的可能性。</p>
+      <div class="cmeta">
+        <div class="cmi">
+          <div class="cmi-icon">&#128205;</div>
+          <div><div class="cmi-lbl">地址</div><div class="cmi-val">广州市 · 黑森（广州）信息科技有限公司</div></div>
+        </div>
+        <div class="cmi">
+          <div class="cmi-icon">&#9993;</div>
+          <div><div class="cmi-lbl">邮箱</div><div class="cmi-val">hello@heisen-tech.com</div></div>
+        </div>
+        <div class="cmi">
+          <div class="cmi-icon">&#128172;</div>
+          <div><div class="cmi-lbl">微信咨询</div><div class="cmi-val">扫码添加商务微信</div></div>
+        </div>
+        <div class="cmi">
+          <div class="cmi-icon">&#127970;</div>
+          <div><div class="cmi-lbl">旗下品牌</div><div class="cmi-val">小木广告 · himi AI</div></div>
+        </div>
+      </div>
+    </div>
+    <form class="form" onsubmit="handleSubmit(event)">
+      <div class="form-row">
+        <div class="fg"><label class="fl">您的姓名</label><input class="fi" type="text" placeholder="姓名"></div>
+        <div class="fg"><label class="fl">公司名称</label><input class="fi" type="text" placeholder="公司 / 品牌"></div>
+      </div>
+      <div class="fg"><label class="fl">联系方式</label><input class="fi" type="text" placeholder="手机 / 微信 / 邮箱"></div>
+      <div class="fg"><label class="fl">需求描述</label><textarea class="fta" placeholder="请简述您的需求……"></textarea></div>
+      <button type="submit" class="fsub">发送需求 &rarr;</button>
+    </form>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div>
+    <div class="fbrand">黑森（广州）信息科技有限公司</div>
+    <div class="fsub2">HEISEN (GUANGZHOU) INFORMATION TECHNOLOGY CO., LTD.</div>
+  </div>
+  <div class="flinks">
+    <a href="#about">关于我们</a>
+    <a href="#brands">小木广告</a>
+    <a href="#himi">himi AI</a>
+    <a href="#works">案例作品</a>
+    <a href="#contact">联系我们</a>
+  </div>
+  <div class="fcopy">&copy; 2025 HEISEN TECH &nbsp;·&nbsp; 粤ICP备XXXXXXXX号</div>
+</footer>
+
+<script>
+/* ── 移动菜单 ── */
+function toggleMenu() {
+  document.getElementById('mmenu').classList.toggle('open');
+}
+
+/* ── 导航栏：滚动后加背景 ── */
+var nav = document.getElementById('mainNav');
+window.addEventListener('scroll', function() {
+  if (window.scrollY > 40) {
+    nav.classList.add('scrolled');
+  } else {
+    nav.classList.remove('scrolled');
+  }
+}, { passive: true });
+
+/* ── 数字递增动画 ── */
+function animateCount(el, target, duration) {
+  var start = 0;
+  var step = target / (duration / 16);
+  var timer = setInterval(function() {
+    start += step;
+    if (start >= target) { start = target; clearInterval(timer); }
+    el.innerHTML = Math.floor(start) + '<sup>+</sup>';
+  }, 16);
+}
+var statEls = document.querySelectorAll('.hero-stat-num[data-target]');
+var statDone = false;
+var statObs = new IntersectionObserver(function(entries) {
+  entries.forEach(function(e) {
+    if (e.isIntersecting && !statDone) {
+      statDone = true;
+      statEls.forEach(function(el) {
+        var target = parseInt(el.getAttribute('data-target'), 10);
+        setTimeout(function() { animateCount(el, target, 1200); }, 900);
+      });
+    }
+  });
+}, { threshold: 0.5 });
+if (statEls.length) statObs.observe(statEls[0].closest('.hero-stats'));
+
+/* ── 滚动渐入 ── */
+var revObs = new IntersectionObserver(function(entries) {
+  entries.forEach(function(e, i) {
+    if (e.isIntersecting) {
+      var delay = parseInt(e.target.getAttribute('data-delay') || '0', 10);
+      setTimeout(function() { e.target.classList.add('visible'); }, delay);
+    }
+  });
+}, { threshold: 0.07 });
+document.querySelectorAll('.reveal').forEach(function(el, i) {
+  revObs.observe(el);
+});
+
+/* ── t-label 线条延展 ── */
+var lblObs = new IntersectionObserver(function(entries) {
+  entries.forEach(function(e) {
+    if (e.isIntersecting) e.target.classList.add('visible');
+  });
+}, { threshold: 0.5 });
+document.querySelectorAll('.t-label').forEach(function(el) { lblObs.observe(el); });
+
+/* ── 作品案例数据 ──────────────────────────────────────────────────
+   替换说明：
+   - 把真实作品图放入 assets/images/works/
+   - 在对应条目添加 img 字段，例如：img: 'assets/images/works/work-01.jpg'
+   - 有 img 字段时显示图片，没有时显示占位色块
+   - 视频类作品加 v: true 会显示播放按钮遮罩
+─────────────────────────────────────────────────────────────────── */
+var works = [
+  { title: '完美日记 618 大促视觉', cat: '电商视觉', type: 'ecom',   color: '#1a0a2a', emoji: '\uD83D\uDC84', h: 280 },
+  { title: '招商银行年度品牌影片', cat: '视频制作', type: 'video',  color: '#0a1520', emoji: '\uD83C\uDFAC', h: 360, v: true },
+  { title: '元气森林新品发布会',   cat: '活动策划', type: 'design', color: '#0a1a0a', emoji: '\uD83C\uDFAA', h: 240 },
+  { title: 'himi AI 详情页案例',  cat: 'AI 生成',  type: 'ai',    color: '#0d1a10', emoji: '\u2728',       h: 310 },
+  { title: '华为旗舰店视觉改版',   cat: '电商视觉', type: 'ecom',   color: '#1a1a0a', emoji: '\uD83D\uDCF1', h: 260 },
+  { title: '平安保险新媒体运营',   cat: '新媒体',   type: 'social', color: '#1a0a0a', emoji: '\uD83D\uDCCA', h: 200 },
+  { title: '波司登冬季广告片',     cat: '视频制作', type: 'video',  color: '#0a0a1a', emoji: '\uD83C\uDFA5', h: 350, v: true },
+  { title: 'himi 批量 SKU 内容',  cat: 'AI 生成',  type: 'ai',    color: '#0a1a12', emoji: '\uD83E\uDD16', h: 220 },
+  { title: '国潮美妆品牌视觉系统', cat: '品牌设计', type: 'design', color: '#1a0d0a', emoji: '\uD83C\uDFEE', h: 290 }
+];
+
+function renderWorks(f) {
+  var list = (!f || f === 'all') ? works : works.filter(function(w){ return w.type === f; });
+  var html = '';
+  for (var i = 0; i < list.length; i++) {
+    var w = list[i];
+    var inner = w.img
+      ? '<img class="wi-img" src="' + w.img + '" alt="' + w.title + '" style="height:' + w.h + 'px;object-fit:cover;width:100%">'
+      : '<div class="wi-img" style="height:' + w.h + 'px;background:linear-gradient(160deg,' + w.color + ',#080808);display:flex;align-items:center;justify-content:center;font-size:56px">' + w.emoji + '</div>';
+    var badge = w.v ? '<div class="wi-vbadge">VIDEO</div><div class="wi-play">&#9654;</div>' : '';
+    html += '<div class="wi" data-type="' + w.type + '">'
+          + inner + badge
+          + '<div class="wi-overlay"><div class="wi-title">' + w.title + '</div><div class="wi-cat">' + w.cat + '</div></div>'
+          + '</div>';
+  }
+  document.getElementById('wg').innerHTML = html;
+}
+renderWorks('all');
+
+window.fw = function(btn, type) {
+  document.querySelectorAll('.fbtn').forEach(function(b){ b.classList.remove('active'); });
+  btn.classList.add('active');
+  renderWorks(type);
+};
+
+/* ── 联系表单 ── */
+window.handleSubmit = function(e) {
+  e.preventDefault();
+  var btn = e.target.querySelector('.fsub');
+  var orig = btn.textContent;
+  btn.textContent = '\u2713 已发送，我们会尽快联系您';
+  btn.style.background = 'var(--green)';
+  btn.style.color = '#fff';
+  setTimeout(function(){
+    btn.textContent = orig;
+    btn.style.background = '';
+    btn.style.color = '';
+  }, 4000);
+};
+</script>
+</body>
+</html>

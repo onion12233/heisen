@@ -1,0 +1,5 @@
+# clients/ — 客户Logo
+
+将客户Logo图片命名为：client-01.png, client-02.png ... 放在此目录。
+建议：PNG格式，透明背景，高度统一约60px。
+在 index.html 中 .clients-track 区域替换 <span class="ci"> 文字为图片标签即可。

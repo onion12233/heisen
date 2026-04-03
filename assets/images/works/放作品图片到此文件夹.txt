@@ -1,0 +1,9 @@
+# works/ — 作品案例图
+
+将案例图片按顺序命名：work-01.jpg, work-02.jpg ... 放在此目录。
+建议尺寸：宽度统一600px，高度可不同（280~400px区间），形成瀑布流视觉效果。
+格式：JPG 或 WebP（文件更小）。
+
+替换方法：在 index.html 底部 JS 的 data 数组中，将 emoji 字段改为：
+  img: 'assets/images/works/work-01.jpg'
+并在 renderWorks 函数中更新渲染逻辑（HTML 中有注释提示）。

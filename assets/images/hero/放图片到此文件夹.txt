@@ -1,0 +1,5 @@
+# hero/ — 首屏背景图
+
+将首屏背景图命名为 hero-bg.jpg 放在此目录。
+建议尺寸：1920×1080，深色调为宜。
+在 index.html 中 .hero-bg 样式里添加 background-image 引用即可。

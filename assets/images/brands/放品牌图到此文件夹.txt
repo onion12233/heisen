@@ -1,0 +1,5 @@
+# brands/ — 品牌配图
+
+放入两张品牌封面图：
+- xiaomu-cover.jpg（小木广告品牌图，建议800×600，绿色调）
+- himi-cover.jpg（himi AI 品牌图，建议800×600，深色/科技感）
